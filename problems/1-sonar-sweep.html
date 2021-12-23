@@ -1,0 +1,54 @@
+  <!doctype html>
+
+  <head>
+    <meta charset='utf-8'>
+    <title>1-sonar-sweep</title>
+    <script src="../input/1-input.js"></script>
+    <script src="../utils/1-input.js"></script>
+    <script>
+
+      /*
+        use antenna to get keys
+        0-50 stars for antenna signal strength
+        answer is 1161
+
+        toc
+        // input
+        // solution
+        // lib
+
+      */
+
+
+      const readings = spaceSeparatedStringToArray(sonarSweepInput3)
+      console.log(readings[0], readings[readings.length - 1], 'length: ', readings.length)
+
+      // solution
+      showNumberOfIncreases(readings)
+
+      function showNumberOfIncreases(input) {
+        let readingsIncreaseCount = 0
+
+        input.forEach((el, i, arr) => {
+          if (i === 0) return;
+          const firstReading = arr[i - 1]
+          const secondReading = el
+          // test to prove we need parseInt
+          if ((parseInt(firstReading) < parseInt(secondReading)) && !(firstReading < secondReading)) {
+            console.log('firstReading: ', firstReading, 'secondReading: ', secondReading)
+          }
+          parseInt(firstReading) < parseInt(secondReading)&& readingsIncreaseCount++
+        })
+        console.log('readingsIncreaseCount', readingsIncreaseCount)
+      }
+
+      // lib
+      function spaceSeparatedStringToArray(inputString) {
+        return inputString.trim().split(/\s+/)
+        // return inputString.trim().split(/\s+/).map(x => parseInt(x))
+      }
+    </script>
+  </head>
+
+  <body style="background-color: black">
+  </body>
