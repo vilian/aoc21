@@ -1,11 +1,11 @@
-const sonarSweepInputDemoA = '199 200 208 210 200 207 240 269 260 263';
+const sonarSweepInputDemo = '199 200 208 210 200 207 240 269 260 263';
 const sonarSweepInputDemoB = `
-199 a
-200 a b
-208 a b c
-210   b c d
-200     c d e
-207 240 269 260 263`;
+  199 a
+  200 a b
+  208 a b c
+  210   b c d
+  200     c d e
+  207 240 269 260 263`;
 const sonarSweepInput3 = `
   193
   197

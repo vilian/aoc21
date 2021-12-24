@@ -4,49 +4,52 @@
     <meta charset='utf-8'>
     <title>1-sonar-sweep</title>
     <script src="../input/1-input.js"></script>
-    <script src="../utils/1-input.js"></script>
+    <script src="../utils/index.js"></script>
     <script>
-
       /*
-        use antenna to get keys
-        0-50 stars for antenna signal strength
-        answer is 1161
-
-        toc
-        // input
-        // solution
-        // lib
-
+        TODO to class
       */
 
 
-      const readings = spaceSeparatedStringToArray(sonarSweepInput3)
-      console.log(readings[0], readings[readings.length - 1], 'length: ', readings.length)
+      const inputA = spaceSeparatedStringToArray(sonarSweepInput3)
+      const inputDemo = spaceSeparatedStringToArray(sonarSweepInputDemo)
+      // console.log(inputA[0], inputA[inputA.length - 1], 'length: ', inputA.length)
 
       // solution
-      showNumberOfIncreases(readings)
+      console.log('part A number of increases: ', showNumberOfIncreases(inputA))
+      console.log('part B number of increases: ', showNumberOfIncreases(inputA, true))
 
-      function showNumberOfIncreases(input) {
-        let readingsIncreaseCount = 0
+      function showNumberOfIncreases(input, groupByThree) {
+        let increaseCount = 0
 
         input.forEach((el, i, arr) => {
+          let firstReading = 0,
+            secondReading = 0;
+
           if (i === 0) return;
-          const firstReading = arr[i - 1]
-          const secondReading = el
-          // test to prove we need parseInt
-          if ((parseInt(firstReading) < parseInt(secondReading)) && !(firstReading < secondReading)) {
-            console.log('firstReading: ', firstReading, 'secondReading: ', secondReading)
+
+          if (!groupByThree) {
+            firstReading = parseInt(arr[i - 1])
+            secondReading = parseInt(el)
           }
-          parseInt(firstReading) < parseInt(secondReading)&& readingsIncreaseCount++
+
+          if (groupByThree) {
+            for (let j = 0; j < 3; j++) {
+
+              if (arr[i + j] === undefined) return;
+
+              firstReading += parseInt(arr[i - 1 + j])
+              secondReading += parseInt(arr[i + j])
+
+              // console.log(firstReading, secondReading)
+            }
+          }
+
+          firstReading < secondReading && increaseCount++
         })
-        console.log('readingsIncreaseCount', readingsIncreaseCount)
+        return increaseCount
       }
 
-      // lib
-      function spaceSeparatedStringToArray(inputString) {
-        return inputString.trim().split(/\s+/)
-        // return inputString.trim().split(/\s+/).map(x => parseInt(x))
-      }
     </script>
   </head>
 
