@@ -2,7 +2,7 @@
 
   <head>
     <meta charset='utf-8'>
-    <title>1-sonar-sweep</title>
+    <title>2-dive</title>
     <script src="../input/2-input.js"></script>
     <script src="../utils/index.js"></script>
     <script>
@@ -10,72 +10,70 @@
         TODO to class
       */
 
-      class Instruction{
-        constructor(instructionSet){
+      class Instruction {
+        constructor(instructionSet) {
           this.direction = instructionSet[0];
           this.amount = parseInt(instructionSet[1]);
         }
       }
+
+      const coords = {
+        horizontalPos: 0,
+        depth: 0,
+        aim: 0,
+      }
+
       const instructions = input.trim().split(/\n/).map(el => el.trim())
       const instructionsDemo = inputDemo.trim().split(/\n/).map(el => el.trim())
 
       const instructionSet = instructions.map(el => new Instruction(el.split(' ')))
 
-      const coords = {
-        horizontalPos: 0,
-        depth: 0
-      }
-      instructionSet.forEach(instruction => {
-        switch(instruction.direction) {
-          case 'up':
-            coords.depth -= instruction.amount
-          break;
-          case 'down':
-            coords.depth += instruction.amount
-          break;
-          case 'forward':
-            coords.horizontalPos += instruction.amount
-          break;
-        }
-      })
-      console.log(coords.horizontalPos * coords.depth)
-      // console.log(instructionSet)
-      // .split(/\n/)
-      // console.log(inputA[0], inputA[inputA.length - 1], 'length: ', inputA.length)
 
-      // solution
+      function calcCoords2(instructionSet, coords, partTwo) {
 
-      function showNumberOfIncreases(input, groupByThree) {
-        let increaseCount = 0
-
-        input.forEach((el, i, arr) => {
-          let firstReading = 0,
-            secondReading = 0;
-
-          if (i === 0) return;
-
-          if (!groupByThree) {
-            firstReading = parseInt(arr[i - 1])
-            secondReading = parseInt(el)
+        instructionSet.forEach(instruction => {
+          switch (instruction.direction) {
+            case 'up':
+              partTwo ?
+                coords.aim -= instruction.amount :
+                coords.depth -= instruction.amount
+              break;
+            case 'down':
+              partTwo ?
+                coords.aim += instruction.amount :
+                coords.depth += instruction.amount
+              break;
+            case 'forward':
+              coords.horizontalPos += instruction.amount
+              partTwo && (coords.depth += coords.aim * instruction.amount)
+              break;
           }
-
-          if (groupByThree) {
-            for (let j = 0; j < 3; j++) {
-
-              if (arr[i + j] === undefined) return;
-
-              firstReading += parseInt(arr[i - 1 + j])
-              secondReading += parseInt(arr[i + j])
-
-              // console.log(firstReading, secondReading)
-            }
-          }
-
-          firstReading < secondReading && increaseCount++
         })
-        return increaseCount
+
+        return coords
       }
 
+
+      function resetCoords() {
+        coords.horizontalPos = 0;
+        coords.depth = 0;
+        coords.aim = 0;
+      }
+
+
+      calcCoords2(instructionSet, coords)
+      console.log(
+        'coords', coords,
+        'day 2 solution: ', coords.horizontalPos * coords.depth
+      )
+
+
+      resetCoords();
+      calcCoords2(instructionSet, coords, true)
+      console.log(
+        'coords', coords,
+        'day 2b solution: ', coords.horizontalPos * coords.depth
+      )
     </script>
   </head>
 
