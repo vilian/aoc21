@@ -1,0 +1,148 @@
+  <!doctype html>
+
+  <head>
+    <meta charset='utf-8'>
+    <title>Advent of Code</title>
+    <script src="../input/3-input.js"></script>
+    <script src="../utils/index.js"></script>
+    <script>
+      // https://adventofcode.com/2021/day/3
+
+      // TODO cleanup and refactor. bitCriteria implementations can be more DRY
+      class PowerConsumption {
+        constructor(report) {
+          this.report = this.formatReport(report)
+          this.bitTally = {
+            0: {
+              bitValue: 0,
+              count: 0
+            },
+            1: {
+              bitValue: 1,
+              count: 0
+            }
+          }
+          this.gammaRate = this.calcGammaRate()
+          this.epsilonRate = this.calcEpsilonRate()
+          this.powerConsumption = this.calcPowerConsumption()
+
+          this.oxygenGenerator = this.calcOxygenGenerator()
+          this.CO2Scrubber = this.calcCO2Scrubber()
+          this.lifeSupport = this.calcLifeSupport()
+        }
+
+        formatReport(report) {
+          return report.trim().split(/\n/).map(el => el.trim())
+        }
+
+        // populate bitTally, compare result to get value, reset bitTally
+        calcGammaRate() {
+          const gammaDigits = []
+          const digitPositions = this.report[0].split('')
+          digitPositions.forEach((digit, pos) => {
+            this.report.forEach(reportVal => {
+              this.bitTally[reportVal[pos]].count++
+            })
+            if (this.bitTally[0].count > this.bitTally[1].count) {
+              gammaDigits.push(this.bitTally[0].bitValue)
+            } else {
+              gammaDigits.push(this.bitTally[1].bitValue)
+            }
+            this.resetBitTally();
+
+          })
+          this.gammaRate = gammaDigits.join('')
+          return gammaDigits.join('')
+
+        }
+        calcEpsilonRate() {
+          this.epsilonRate = this.gammaRate
+            .split('')
+            .map(el => (el == 0 ? 1 : 0))
+            .join('')
+
+          return this.epsilonRate
+        }
+        /*
+          loop, tally index, filter, check if last
+        */
+        calcOxygenGenerator() {
+          let report = [...this.report]
+          let bitCriteria = ''
+
+          for (let i = 0; report[0].split('').length > i; i++) {
+
+            for (let rating of report) {
+              this.bitTally[rating[i]].count++
+            }
+
+            // check tally
+            if (this.bitTally[0].count > this.bitTally[1].count) {
+              bitCriteria = bitCriteria.concat((this.bitTally[0].bitValue).toString())
+            } else if (this.bitTally[0].count < this.bitTally[1].count) {
+              bitCriteria = bitCriteria.concat((this.bitTally[1].bitValue).toString())
+            } else {
+              bitCriteria = bitCriteria.concat((this.bitTally[1].bitValue).toString())
+            }
+            this.resetBitTally();
+
+            // filter report
+            report = report.filter(rating => rating.indexOf(bitCriteria) === 0)
+            if (report.length === 1) {
+              return report[0]
+            }
+          }
+
+        }
+
+        calcCO2Scrubber() {
+          let report = [...this.report]
+          let bitCriteria = ''
+
+          for (let i = 0; report[0].split('').length > i; i++) {
+
+            for (let rating of report) {
+              this.bitTally[rating[i]].count++
+            }
+
+            // check tally
+            if (this.bitTally[0].count < this.bitTally[1].count) {
+              bitCriteria = bitCriteria.concat((this.bitTally[0].bitValue).toString())
+            } else if (this.bitTally[0].count > this.bitTally[1].count) {
+              bitCriteria = bitCriteria.concat((this.bitTally[1].bitValue).toString())
+            } else {
+              bitCriteria = bitCriteria.concat((this.bitTally[0].bitValue).toString())
+            }
+            this.resetBitTally();
+
+            // filter report
+            report = report.filter(rating => rating.indexOf(bitCriteria) === 0)
+            if (report.length === 1) {
+              return report[0]
+            }
+          }
+
+        }
+        calcLifeSupport(){
+          return parseInt(this.oxygenGenerator, 2) * parseInt(this.CO2Scrubber, 2)
+        }
+        resetBitTally() {
+          for (const [key, value] of Object.entries(this.bitTally)) {
+            value.count = 0
+          }
+        }
+        calcPowerConsumption() {
+          return parseInt(this.gammaRate, 2) * parseInt(this.epsilonRate, 2)
+        }
+
+      }
+
+      const pc = new PowerConsumption(input)
+      console.log(pc.powerConsumption)
+      console.log(pc.lifeSupport)
+
+    </script>
+  </head>
+
+  <body style="background-color: black">
+  </body>
