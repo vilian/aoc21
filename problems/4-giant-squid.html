@@ -1,0 +1,180 @@
+  <!doctype html>
+
+  <head>
+    <meta charset='utf-8'>
+    <title>Advent of Code</title>
+    <script src="../input/4-input.js"></script>
+    <!-- <script src="../utils/index.js"></script> -->
+    <script>
+      /*
+        https://adventofcode.com/2021/day/4
+
+        todo separate template creation and board game methods
+        bookmark hasBoardWon row and column winning done todo check combined
+      */
+
+      class BingoBoard {
+        constructor(boardInput) {
+          // this.rawInput = boardInput
+          this.board = this.createBingoBoard(boardInput)
+          this.winCriteria = this.board.length // works for square boards
+          this.lastMarkedNumber = null
+        }
+
+        /**
+         * Creates a matrix (an array of arrays) representing the bingo board
+         * @param string boardInput. A space and newline separated numbers
+         * @return the Bingo Board array
+         */
+        createBingoBoard(boardInput) {
+          let board = []
+          let rows = boardInput.trim().split(/\n/).map(el => el.trim())
+          rows.forEach((row, i) => {
+            board.push(row.split(/\s+/).map(el => {
+              const num = parseInt(el)
+              return {
+                [num]: {
+                  number: num,
+                  marked: false
+                }
+              }
+            }))
+          })
+          return board
+        }
+
+        /**
+         * Sets 'marked' property to true for a given mumber
+         * @param int number
+         * @return void
+         */
+        markNumber(number) {
+          this.lastMarkedNumber = parseInt(number)
+          this.board.forEach((row) => {
+            row.forEach(slot => {
+              slot[number] && (slot[number].marked = true)
+            })
+          })
+        }
+
+        /**
+         * Get sum of all unmarked numbers and multiply by last called number.
+         */
+        calcScore() {
+          let sum = 0
+          this.board.forEach((row) => {
+            row.forEach((slot) => {
+              if (!slot[Object.keys(slot)].marked) {
+                sum += slot[Object.keys(slot)].number
+              }
+            })
+          })
+          return sum * this.lastMarkedNumber
+        }
+
+        /**
+         * Checks if a all numbers in a row or column have prop marked true
+         * @return bool
+         */
+        hasBoardWon() {
+          return this.hasRowWon() ? true :
+            this.hasColumnWon() ? true :
+            false
+        }
+
+        hasRowWon() {
+          let tally = 0
+          for (const row of this.board) {
+            for (const slot of row) {
+              slot[Object.keys(slot)[0]].marked && tally++
+            }
+            if (tally === this.winCriteria) return true
+            tally = 0
+          }
+          return false
+        }
+
+        hasColumnWon() {
+          let tally = 0
+          const rows = this.board
+          for (let column = 0; column < this.board[0].length; column++) {
+            for (const row of rows) {
+              const slot = row[column]
+              slot[Object.keys(slot)[0]].marked && tally++
+            }
+            if (tally === this.winCriteria) return true
+            tally = 0
+          }
+          return false
+        }
+      }
+
+      class BingoGame {
+        constructor(problemInput) {
+          this.boards = this.setBoards(problemInput)
+          this.drawnNumbers = this.setDrawnNumbers(problemInput)
+        }
+
+        //Extract and parse just the first line of input
+        setDrawnNumbers(problemInput) {
+          return problemInput.trim().split(/\n\n/)
+            .map(el => el.trim())[0]
+            .split(',').map(el => parseInt(el))
+        }
+        
+        /**
+         * Returns an array of BingoBoards
+         */
+        setBoards(problemInput) {
+          const boards = problemInput.trim().split(/\n\n/)
+            .map((input, i) => {
+              if (i === 0) {
+                return
+              }
+              const board = new BingoBoard(input.trim())
+              return board
+            })
+          boards.shift()
+          return boards
+        }
+
+        playGame() {
+          for (const number of this.drawnNumbers) {
+            for (const board of this.boards) {
+              board.markNumber(number)
+              if (board.hasBoardWon()) return board.calcScore()
+            }
+          }
+
+        }
+      }
+
+      const bg = new BingoGame(input)
+      // const bg = new BingoGame(demoInput)
+      console.log(bg.playGame())
+      const testBoard = new BingoBoard(binput)
+      // console.log(testBoard.rawInput)
+      // testBoard.markNumber(13)
+      // testBoard.markNumber(22)
+      // testBoard.markNumber(17)
+      // // console.log(testBoard.hasBoardWon())
+      // testBoard.markNumber(11)
+      // testBoard.markNumber(8)
+      // testBoard.markNumber(0)
+
+      testBoard.markNumber(22)
+      testBoard.markNumber(8)
+      testBoard.markNumber(21)
+      testBoard.markNumber(6)
+      testBoard.markNumber(1)
+      console.log(testBoard.hasColumnWon())
+
+      // console.log(testBoard)
+
+      // testBoard.markNumber(313)
+      // console.log(testBoard)
+    </script>
+  </head>
+
+  <body style="background-color: black">
+  </body>
