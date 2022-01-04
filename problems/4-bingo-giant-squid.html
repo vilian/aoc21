@@ -9,13 +9,17 @@
       /*
         https://adventofcode.com/2021/day/4
 
-        todo separate template creation and board game methods
+        TODO separate template creation and board game methods
         bookmark hasBoardWon row and column winning done todo check combined
+
+        TODO cleanup
+        maybe add ids to boards at insert or have a way to use them.
+        identify proper design pattern used or to use.
       */
 
       class BingoBoard {
         constructor(boardInput) {
-          // this.rawInput = boardInput
+          this.rawInput = boardInput
           this.board = this.createBingoBoard(boardInput)
           this.winCriteria = this.board.length // works for square boards
           this.lastMarkedNumber = null
@@ -121,7 +125,7 @@
             .map(el => el.trim())[0]
             .split(',').map(el => parseInt(el))
         }
-        
+
         /**
          * Returns an array of BingoBoards
          */
@@ -138,21 +142,61 @@
           return boards
         }
 
+        /**
+         * Runs the bingo game, records first and last winning board
+         */
         playGame() {
+          let firstWonBoardScore, lastWonBoardScore, firstBoard, lastBoard
+          const wonBoards = []
+
           for (const number of this.drawnNumbers) {
+            // TODO refactor: board id should be part of board class.
+            let boardId = 0
             for (const board of this.boards) {
+              boardId++
               board.markNumber(number)
-              if (board.hasBoardWon()) return board.calcScore()
+
+              if (board.hasBoardWon() &&
+                wonBoards.indexOf(boardId) === -1
+              ) {
+                wonBoards.push(boardId)
+                if (!firstWonBoardScore) {
+                  firstWonBoardScore = board.calcScore();
+                  firstBoard = board.rawInput
+                }
+                // !firstWonBoardScore && (firstWonBoardScore = board.calcScore())
+                if (wonBoards.length === this.boards.length) {
+                  // console.log('wonBoardsCount', wonBoardsCount)
+                  // console.log('wonBoards.length', wonBoards.length)
+                  // console.log('last board: ', board.rawInput, 'drawn num', number )
+                  lastWonBoardScore = board.calcScore()
+                  lastBoard = board
+                  return {
+                    firstBoard,
+                    firstWonBoardScore,
+                    lastBoard,
+                    lastWonBoardScore,
+                  }
+                  // return `first: ${firstWonBoardScore} last: ${lastWonBoardScore}`
+                }
+              }
+
             }
           }
-
         }
+
       }
 
       const bg = new BingoGame(input)
       // const bg = new BingoGame(demoInput)
       console.log(bg.playGame())
-      const testBoard = new BingoBoard(binput)
+
+
+      // const testBoard = new BingoBoard(binput)
+      // console.log(bg.drawnNumbers.forEach(num => {
+      //   testBoard.markNumber(num)
+      //   if (testBoard.hasBoardWon()) {console.log('test board after winning', testBoard)}
+      // }))
       // console.log(testBoard.rawInput)
       // testBoard.markNumber(13)
       // testBoard.markNumber(22)
@@ -162,12 +206,12 @@
       // testBoard.markNumber(8)
       // testBoard.markNumber(0)
 
-      testBoard.markNumber(22)
-      testBoard.markNumber(8)
-      testBoard.markNumber(21)
-      testBoard.markNumber(6)
-      testBoard.markNumber(1)
-      console.log(testBoard.hasColumnWon())
+      // testBoard.markNumber(22)
+      // testBoard.markNumber(8)
+      // testBoard.markNumber(21)
+      // testBoard.markNumber(6)
+      // testBoard.markNumber(1)
+      // console.log(testBoard.hasColumnWon())
 
       // console.log(testBoard)
 
