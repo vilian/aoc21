@@ -4,7 +4,7 @@ class Line {
   endPoint;
   isHorizontal;
   isVertical;
-  isUsable;
+  isDiagonal;
   pointsList;
 
   constructor(input) {
@@ -13,12 +13,10 @@ class Line {
     this.endPoint = this.#setEnd()
     this.isHorizontal = this.#isHorizontal()
     this.isVertical = this.#isVertical()
-    this.isUsable = this.#isUsable()
+    this.isDiagonal = this.#isDiagonal()
     this.pointsList = this.#setPointsList()
   }
-  #isUsable() {
-    return this.#isHorizontal() || this.#isVertical()
-  }
+
   #setStart() {
     const [x, y] = this.input.split('->')[0].trim().split(',')
     return new Point(x, y)
@@ -35,35 +33,43 @@ class Line {
     if (this.isVertical) {
       return this.#setVerticalLine()
     }
+    if (this.isDiagonal) {
+      return this.#setDiagonalLine()
+    }
     return []
   }
+
   #isHorizontal() {
     return this.startPoint.y === this.endPoint.y
   }
   #isVertical() {
     return this.startPoint.x === this.endPoint.x
   }
+  #isDiagonal() {
+    return Math.abs(this.startPoint.x - this.endPoint.x) ===
+      Math.abs(this.startPoint.y - this.endPoint.y)
+  }
 
   #setVerticalLine() {
-    const vLine = []
-    vLine.push(this.startPoint)
+    const verticalLine = []
 
     // is increasing
     if (this.startPoint.y < this.endPoint.y) {
       for (let i = this.startPoint.y; i <= this.endPoint.y; i++) {
-        vLine.push(new Point(this.startPoint.x, i))
+        verticalLine.push(new Point(this.startPoint.x, i))
       }
 
       // is decreasing
     } else {
       for (let i = this.startPoint.y; i >= this.endPoint.y; i--) {
-        vLine.push(new Point(this.startPoint.x, i))
+        verticalLine.push(new Point(this.startPoint.x, i))
       }
     }
 
-    vLine.push(this.endPoint)
-    return vLine
+    verticalLine.push(this.endPoint)
+    return verticalLine
   }
+
   #setHorizontalLine() {
     const hLine = []
 
@@ -72,6 +78,7 @@ class Line {
       for (let i = this.startPoint.x; i <= this.endPoint.x; i++) {
         hLine.push(new Point(i, this.startPoint.y))
       }
+
       // is decreasing
     } else {
       for (let i = this.startPoint.x; i >= this.endPoint.x; i--) {
@@ -80,4 +87,58 @@ class Line {
     }
     return hLine
   }
+
+  #setDiagonalLine() {
+    const dLine = []
+
+    // is increasing 45
+    if (
+      this.startPoint.x > this.endPoint.x &&
+      this.startPoint.y < this.endPoint.y
+    ) {
+      let y = this.startPoint.y
+      for (let x = this.startPoint.x; x >= this.endPoint.x; x--) {
+        dLine.push(new Point(x, y++))
+      }
+      return dLine
+    }
+
+    // is decreasing 45
+    if (
+      this.startPoint.x < this.endPoint.x &&
+      this.startPoint.y > this.endPoint.y
+    ) {
+      let y = this.startPoint.y
+      for (let x = this.startPoint.x; x <= this.endPoint.x; x++) {
+        dLine.push(new Point(x, y--))
+      }
+      return dLine
+    }
+
+    // is increasing 135
+    if (
+      this.startPoint.x > this.endPoint.x &&
+      this.startPoint.y > this.endPoint.y
+    ) {
+      let y = this.startPoint.y
+      for (let x = this.startPoint.x; x >= this.endPoint.x; x--) {
+        dLine.push(new Point(x, y--))
+      }
+      return dLine
+    }
+
+    // is decreasing 135
+    if (
+      this.startPoint.x < this.endPoint.x &&
+      this.startPoint.y < this.endPoint.y
+    ) {
+      let y = this.startPoint.y
+      for (let x = this.startPoint.x; x <= this.endPoint.x; x++) {
+        dLine.push(new Point(x, y++))
+      }
+      return dLine
+    }
+
+  }
+
 }

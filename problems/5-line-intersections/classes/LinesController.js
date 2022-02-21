@@ -1,9 +1,8 @@
 class LinesController {
   input;
   horizontalOrVerticalList;
-  segmentsEndpointsList;
+  allLinesList;
 
-  checkedPoints;
   moreThanTwoPointOccurrenceCount;
 
   constructor(input) {
@@ -11,10 +10,12 @@ class LinesController {
       throw new Error('input is required')
     }
     this.input = input
-    this.segmentsEndpointsList = this.#setEndpointsList()
+    this.allLinesList = this.#setEndpointsList()
     this.horizontalOrVerticalList = this.#setHorizontalOrVerticalList()
     this.moreThanTwoPointOccurrenceCount =
       this.#moreThanTwoPointOccurrenceCount()
+    this.moreThanTwoPointOccurrenceCountHVOnly =
+      this.#moreThanTwoPointOccurrenceCount(true)
   }
 
   #setEndpointsList() {
@@ -23,20 +24,21 @@ class LinesController {
   }
 
   #setHorizontalOrVerticalList() {
-    return this.segmentsEndpointsList.filter(this.#isHorizontalOrVertical)
+    return this.allLinesList.filter(this.#isHorizontalOrVertical)
   }
 
   #isHorizontalOrVertical(line) {
     return line.isHorizontal || line.isVertical
   }
 
-  #moreThanTwoPointOccurrenceCount() {
+  #moreThanTwoPointOccurrenceCount(hvOnly = false) {
     let overlapCount = 0
     const moreThanTwoPoints = []
+    const linesList = hvOnly ? this.horizontalOrVerticalList : this.allLinesList
 
-    this.horizontalOrVerticalList.forEach(line => {
+    linesList.forEach(line => {
       line.pointsList.forEach(point => {
-        const occurrence = this.#checkOccurrencesOfPointInLineList(point)
+        const occurrence = this.#checkOccurrencesOfPointInLineList(point, linesList)
         if (
           occurrence > 1 &&
           !moreThanTwoPoints.find(el => el.x === point.x && el.y === point.y)
@@ -50,10 +52,10 @@ class LinesController {
     return overlapCount
   }
 
-  // all points will return at least 1
-  #checkOccurrencesOfPointInLineList(point) {
+  // all points will return at least one occurrence
+  #checkOccurrencesOfPointInLineList(point, linesList) {
     let occurrence = 0
-    this.horizontalOrVerticalList.forEach(line => {
+    linesList.forEach(line => {
       const found = line.pointsList.find(el => el.x === point.x && el.y === point.y)
       if (found) occurrence++;
     })
