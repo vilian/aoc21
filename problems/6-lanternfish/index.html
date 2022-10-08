@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Advent of Code</title>
+  <script src="./input.js"></script>
+</head>
+
+<body style="background-color: black;">
+  <pre></pre>
+</body>
+<script>
+  // https://adventofcode.com/2021/day/6
+
+  /*
+   grow lanternfish school
+   new fish every 7 days
+   model each fish as a single number that represents the number of days
+   until it creates a new lanternfish.
+   new lanternfish: two more days for its first cycle.
+
+   https://www.reddit.com/r/adventofcode/comments/r9z49j/2021_day_6_solutions/
+  */
+
+  /**
+   * @param array school The starting fish
+   * @param days
+   */
+  class LanternFishCalculator {
+    fishParents;
+    days;
+    oneFishFamily;
+    eachFamilyOverTime = [];
+
+    constructor(school, days) {
+      this.fishParents = school;
+      this.days = days;
+    }
+
+    /**
+     * @param {array} family An array of a fish family. A fish family is a
+     * parent fish and its offspring. Not to be confused with the whole school.
+     * @return {array} The family after it has lived one day.
+     */
+    fishFamilyAfterOneDay(family) {
+      const newBornFish = [];
+      const newFamily = family
+        .map((fish) => {
+          if (fish === 0) {
+            newBornFish.push(8);
+            return 6;
+          }
+          return fish - 1;
+        })
+        .concat(newBornFish);
+      this.eachFamilyOverTime.push(newFamily);
+      return newFamily;
+    }
+
+    fishFamilyAfterNumberOfDays(family, days) {
+      let newFamily = family;
+      for (; days > 0; days--) {
+        newFamily = this.fishFamilyAfterOneDay(newFamily);
+      }
+      this.oneFishFamily = newFamily;
+      return newFamily;
+    }
+
+    fishSchoolLengthAfterNumberOfDays() {
+      const arrayLengths = [];
+      this.fishParents.forEach((fish) => {
+        let grownFamily = this.fishFamilyAfterNumberOfDays([fish], this.days);
+        arrayLengths.push(grownFamily.length);
+      });
+      return arrayLengths.reduce((a, b) => a + b);
+    }
+
+    /*
+
+    */
+    calcWithLessMemory() {
+      fishParents;
+
+      // let totalFish = 0;
+      //
+      // for (let i = 0; i < this.days; i++) {}
+
+      return null;
+    }
+  }
+
+  // util
+  const formatInput = (input) => input.split(",").map((n) => Number(n));
+
+  // days: 18, 80, 256
+  const days = 90;
+  const input = formatInput(puzzleInput); // puzzleInput | testInput
+
+  // const lfc = new LanternFishCalculator(input, days);
+
+  const res = [18, 80, 256].map((d) => {
+    B = Array(9).fill(0);
+    input.map((f) => B[+f]++);
+    // debugger;
+    for (i = 0; ++i < d; ) {
+      B[(7 + i) % 9] += B[i % 9];
+    }
+    return B.reduce((a, x) => a + x, 0);
+  });
+
+  console.log({ res });
+
+  // For 256 browser runs out of memory with this algorithm for both inputs.
+  // It even runs out of memory for 1 input.
+  // console.log({
+  //   days,
+  //   fish: lfc.fishSchoolLengthAfterNumberOfDays(),
+  //   eachFamilyOverTime: lfc.eachFamilyOverTime,
+  // });
+  /*
+  3: [6, 1, 1, 3, 8]
+  4: [0, 2, 2, 4]
+  3: [6, 1, 1, 3, 8]
+  1: [4, 6, 6, 1, 6, 8, 8]
+  2: [5, 0, 0, 2, 7]
+
+  3x5 + 4 + 7 = 19 + 7 = 26
+
+  day fish
+  0   [4]
+  1   [3]
+  2   [2]
+  3   [1]
+  4   [0,8]
+  5   [6,7]
+  6   [4,5]
+  7   [3,4]
+  8   [2,3]
+  9   [1,2]
+  10  [0,1,8]
+  11  []
+  12  []
+  13  []
+  14  []
+  15  []
+  16  []
+  17  []
+  */
+</script>
